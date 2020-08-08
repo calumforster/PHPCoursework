@@ -2,9 +2,17 @@
 require 'Ship.php';
 session_start();
 //Request Vars
-$onload = $_POST["isPlayer"];
-$playerMove = $_POST["coOrdinates"];
 
+
+
+switch ($_POST["action"]) {
+   case 'makeBoard':
+       $onload = $_POST["isPlayer"];
+       break;
+   case 'playerTurn':
+       $playerMove = $_POST["coOrdinates"];
+       break;
+}
 //Game Vars
 $battleGrid;
 

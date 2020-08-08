@@ -8,6 +8,7 @@ $( document ).ready(function() {
     url: "phpBackend.php",
     type: 'POST',
     data: {
+        action : "makeBoard",
         isPlayer : true
     }});
         
@@ -21,6 +22,7 @@ $( document ).ready(function() {
     url: "phpBackend.php",
     type: 'POST',
     data: {
+        action : "makeBoard",
         isPlayer : false
     }});
         
@@ -75,6 +77,7 @@ function changeCol(x,y) {
     url: "phpBackend.php",
     type: 'POST',
     data: {
+        action : "playerTurn",
         coOrdinates : x+","+y
     }});
         
