@@ -65,22 +65,25 @@ $_SESSION["serverShip"];
 {
      
      $ship = $_SESSION["playerShip"];
+     
      if($ship->hitScore == $ship->length){
             $return_data=false;
      }else{
       for ($i = 0; $i < $ship->length; $i++){
-           if($playerMove == $ship->point[$i]){
+           if($playerMove == $ship->point[$i] ){
+               $ship->hitScore++;
             $return_data=($ship->point[$i]);
-            $ship->hitScore++;
+            
            }else{
                
                $return_data= "Miss";
            }
+          
       }
-      echo json_encode($return_data);
+     
      }
-     
-     
+  
+     echo json_encode($return_data); 
      
      
      }
