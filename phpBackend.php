@@ -67,7 +67,7 @@ $_SESSION["serverShip"];
      $ship = $_SESSION["playerShip"];
      
      if($ship->hitScore == $ship->length){
-            $return_data=false;
+            $return_data= $ship->length . "," .$ship->hitScore;
      }else{
       for ($i = 0; $i < $ship->length; $i++){
            if($playerMove == $ship->point[$i] ){
