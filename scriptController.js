@@ -31,6 +31,7 @@ $( document ).ready(function() {
   gridSize = data.size;
   ship = data.ship;
   buildGrid(gridSize, ship, false);
+  alert(JSON.stringify(data));
   
 });  
 });  
@@ -71,7 +72,7 @@ if(isPlayer){
 
 function changeCol(x,y) {
     var id = document.getElementById(x+","+y);
-     id.style.backgroundColor="red"
+     
      
         var req = $.ajax({
     url: "phpBackend.php",
@@ -82,7 +83,22 @@ function changeCol(x,y) {
     }});
         
   req.done(function ( data ) {
-      alert(JSON.stringify(data));
+      var v = JSON.parse(data);
+      if(v.isHit == 1){
+          id.style.backgroundColor="white";
+          alert("You Miss!");
+      }else if(v.isDestroyed == true){
+          alert("You Won!");
+          id.style.backgroundColor="red";
+          location.reload();
+           return false;
+      }else{
+          alert("You Hit!");
+          id.style.backgroundColor="red";
+      }
+      
+      
+      
       
   });
  
