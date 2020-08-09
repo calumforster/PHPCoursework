@@ -58,9 +58,11 @@ if (isset($setGridSize)){
     $shipPlaced = false; 
     while(!$shipPlaced){
         $randX = rand(1,$col);
-        $randY = rand(1,$row);
+        $randY = rand(1,$row);        
+        $ship->orientation = rand(0,1);
         
-        if($randX < $col-1){
+        if($ship->orientation == 0){
+                    if($randX < $col-1){
             $ship->point[0] = $randX . "," . $randY;
             $ship->point[1] = $randX+1 . "," . $randY;
             $shipPlaced = true;
@@ -70,6 +72,19 @@ if (isset($setGridSize)){
                 $_SESSION["serverShip"] = $ship;
             }
         }
+        }else{
+            if($randX < $row-1){
+            $ship->point[0] = $randX . "," . $randY;
+            $ship->point[1] = $randX . "," . ($randY+1);
+            $shipPlaced = true;
+            if($onload == "true"){
+                $_SESSION["playerShip"] = $ship;                
+            }else{
+                $_SESSION["serverShip"] = $ship;
+            }
+        }
+        }
+        
     } 
      header('Content-Type: application/json');
     $return_data=array('ship'=>$ship,'size'=>$col);
