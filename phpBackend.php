@@ -63,8 +63,9 @@ if (isset($setGridSize)){
         $ship->length = rand(1,3);
         
         if($ship->orientation == 0){
-                    if($randX < $col-($ship->length+2)){
+                    if($randX < $col-($ship->length)){
                         for($i =0; $i<$ship->length; $i++){
+                            
                            $ship->point[$i] = $randX+$i . "," . $randY;
                         }
             $shipPlaced = true;
@@ -75,7 +76,7 @@ if (isset($setGridSize)){
             }
         }
         }else{
-            if($randX < $row-($ship->length+2)){
+            if($randY < $row-($ship->length)){
               for($i =0; $i<$ship->length; $i++){
               $ship->point[$i] = $randX . "," . ($randY+$i);
                         }
