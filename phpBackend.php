@@ -12,7 +12,16 @@ switch ($_POST["action"]) {
    case 'playerTurn':
        $playerMove = $_POST["coOrdinates"];
        break;
+   case 'serverTurn':
+       $serverMove = $_POST["action"];
+       break;
+   case 'setGrid':
+       $setGridSize = $_POST["action"];
+       break;
 }
+
+
+
 //Game Vars
 $battleGrid;
 
@@ -24,14 +33,23 @@ $_SESSION["ship"];
 
 $_SESSION["playerShip"];
 $_SESSION["serverShip"];
+$_SESSION["gridSize"];
 
+//$_SESSION["serverMoves"];
+
+if (isset($setGridSize)){
+    
+    $_SESSION["gridSize"] = rand(5,9);
+}
 
  if (isset($onload))
 {
-
+     
      $ship = new Ship(); 
-     $col = 5;
-     $row = 5;
+     $col = $_SESSION["gridSize"];
+     $row = $_SESSION["gridSize"];
+     
+     
      for ($y = $col; $y>0 ; $y--) {
     for($x = 1; $x<=$row; $x++){
         $battleGrid[$x][$y] = 0;        
@@ -87,6 +105,39 @@ $_SESSION["serverShip"];
      
      }
   
+      
+     
+     
+     if (isset($serverMove))
+{
+         
+         $row = $_SESSION["gridSize"];
+         $col = $_SESSION["gridSize"];
+        $randX = rand(1,$col);
+        $randY = rand(1,$row);
+        $moveAttempt = $randX . "," . $randY;
+        
+        
+     
+     $ship = $_SESSION["playerShip"];
+     $return_data=array('isHit'=> 1,'pointHit'=>$moveAttempt,'isDestroyed'=> $ship->isDestroyed);       
+     for($i = 0; $i < $ship->length; $i++){
+         if($moveAttempt == $ship->point[$i]){
+             $ship->hitScore++;
+             $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);             
+         }
+           
+        if($ship->hitScore == $ship->length){
+                $ship->isDestroyed = true;        
+            $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);
+         
+     }
+         
+     }
+
+       echo json_encode($return_data); 
+     
+     }
     
      
      

@@ -1,6 +1,13 @@
 // A $( document ).ready() block.
 $( document ).ready(function() {
     
+    var req = $.ajax({
+    url: "phpBackend.php",
+    type: 'POST',
+    data: {
+        action : "setGrid",
+    }});
+    
     var ship;
     var gridSize;
     
@@ -50,9 +57,9 @@ for (var y = col; y>0 ; y--) {
     for(var x = 1; x<=row; x++){
         if(isPlayer){
             if((ship.point[0] == x+","+y) || (ship.point[1] == x+","+y)){
-                dyn_table += "<td><input class ='shipButt' name='submit' type='button' value='"+x+","+y+"' id='"+x+","+y+"'</input></td>";
+                dyn_table += "<td><input class ='shipButt' name='submit' type='button' value='"+x+","+y+"' id='Player:"+x+","+y+"'</input></td>";
             }else{
-            dyn_table += "<td><input class ='butt' name='submit' type='button' value='"+x+","+y+"' id='"+x+","+y+"'</input></td>";
+            dyn_table += "<td><input class ='butt' name='submit' type='button' value='"+x+","+y+"' id='Player:"+x+","+y+"'</input></td>";
         }
         }else{
             dyn_table += "<td><input class ='butt' name='submit' type='button' onClick=changeCol("+x+","+y+") value='"+x+","+y+"' id='"+x+","+y+"'</input></td>"; 
@@ -72,8 +79,7 @@ if(isPlayer){
 
 function changeCol(x,y) {
     var id = document.getElementById(x+","+y);
-     
-     
+    
         var req = $.ajax({
     url: "phpBackend.php",
     type: 'POST',
@@ -87,6 +93,7 @@ function changeCol(x,y) {
       if(v.isHit == 1){
           id.style.backgroundColor="white";
           alert("You Miss!");
+          serverHit();
       }else if(v.isDestroyed == true){
           alert("You Won!");
           id.style.backgroundColor="red";
@@ -95,6 +102,7 @@ function changeCol(x,y) {
       }else{
           alert("You Hit!");
           id.style.backgroundColor="red";
+          serverHit();
       }
       
       
@@ -102,4 +110,36 @@ function changeCol(x,y) {
       
   });
  
+};
+
+function serverHit() {
+    
+     var req = $.ajax({
+    url: "phpBackend.php",
+    type: 'POST',
+    data: {
+        action : "serverTurn",
+    }});
+      
+        req.done(function ( data ) {
+              var v = JSON.parse(data);
+               var id = document.getElementById("Player:"+v.pointHit);
+      if(v.isHit == 1){
+          id.style.backgroundColor="white";
+          alert("Server Miss!");
+      }else if(v.isDestroyed == true){
+          alert("Server Won!");
+          id.style.backgroundColor="red";
+          location.reload();
+           return false;
+      }else{
+          alert("Server Hit!");
+          id.style.backgroundColor="red";
+      }
+      
+      
+      
+      
+  });
+    
 };
