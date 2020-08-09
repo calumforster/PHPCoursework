@@ -1,6 +1,6 @@
 <?php
 class Ship {
-    public $length = 2;
+    public $length;
     public $point;
     //0 is horizontal, 1 is vertical
     public $orientation;

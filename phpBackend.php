@@ -60,11 +60,13 @@ if (isset($setGridSize)){
         $randX = rand(1,$col);
         $randY = rand(1,$row);        
         $ship->orientation = rand(0,1);
+        $ship->length = rand(1,3);
         
         if($ship->orientation == 0){
-                    if($randX < $col-1){
-            $ship->point[0] = $randX . "," . $randY;
-            $ship->point[1] = $randX+1 . "," . $randY;
+                    if($randX < $col-($ship->length+2)){
+                        for($i =0; $i<$ship->length; $i++){
+                           $ship->point[$i] = $randX+$i . "," . $randY;
+                        }
             $shipPlaced = true;
             if($onload == "true"){
                 $_SESSION["playerShip"] = $ship;                
@@ -73,9 +75,10 @@ if (isset($setGridSize)){
             }
         }
         }else{
-            if($randX < $row-1){
-            $ship->point[0] = $randX . "," . $randY;
-            $ship->point[1] = $randX . "," . ($randY+1);
+            if($randX < $row-($ship->length+2)){
+              for($i =0; $i<$ship->length; $i++){
+              $ship->point[$i] = $randX . "," . ($randY+$i);
+                        }
             $shipPlaced = true;
             if($onload == "true"){
                 $_SESSION["playerShip"] = $ship;                

@@ -20,7 +20,7 @@ $( document ).ready(function() {
     }});
         
   req.done(function ( data ) {
-
+alert(JSON.stringify(data));
   gridSize = data.size;
   ship = data.ship;
   buildGrid(gridSize, ship, true);
@@ -38,7 +38,7 @@ $( document ).ready(function() {
   gridSize = data.size;
   ship = data.ship;
   buildGrid(gridSize, ship, false);
-  alert(JSON.stringify(data));
+  
   
 });  
 });  
@@ -51,16 +51,25 @@ $( document ).ready(function() {
 function buildGrid(size, ship, isPlayer){
      var col = size;
     var row = size;
+    var shipPlaced = false;
     var dyn_table = '<form id="help" action="" method="POST" > <div id="board"> <table border="1" cellpadding="10">';
 for (var y = col; y>0 ; y--) {
     dyn_table += '<tr>';
     for(var x = 1; x<=row; x++){
         if(isPlayer){
-            if((ship.point[0] == x+","+y) || (ship.point[1] == x+","+y)){
-                dyn_table += "<td><input class ='shipButt' name='submit' type='button' value='"+x+","+y+"' id='Player:"+x+","+y+"'</input></td>";
-            }else{
-            dyn_table += "<td><input class ='butt' name='submit' type='button' value='"+x+","+y+"' id='Player:"+x+","+y+"'</input></td>";
-        }
+            shipPlaced = false;
+                for (var i = 0; i < ship.point.length; i++) {
+                    if((x+","+y) == ship.point[i]){
+                        dyn_table += "<td><input class ='shipButt' name='submit' type='button' value='"+x+","+y+"' id='Player:"+x+","+y+"'</input></td>";
+                     shipPlaced = true;
+                    } else if(!shipPlaced && (i == (ship.point.length-1))){
+                        dyn_table += "<td><input class ='butt' name='submit' type='button' value='"+x+","+y+"' id='Player:"+x+","+y+"'</input></td>";
+                    
+                }
+                }
+                
+                    
+           
         }else{
             dyn_table += "<td><input class ='butt' name='submit' type='button' onClick=changeCol("+x+","+y+") value='"+x+","+y+"' id='"+x+","+y+"'</input></td>"; 
     }
