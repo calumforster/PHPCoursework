@@ -4,7 +4,7 @@ class Ship {
     public $point;
     //0 is horizontal, 1 is vertical
     public $orientation;
-    public $hitScore = 0;
+    public $hitScore;
     public $isDestroyed = false;
 }
 

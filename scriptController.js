@@ -1,4 +1,12 @@
 // A $( document ).ready() block.
+var playerScore = 0;
+var playerHP = 0;
+var serverScore = 0;
+var serverHP = 0;
+var gridSize;
+var turns = 0;
+
+
 $( document ).ready(function() {
     
     var req = $.ajax({
@@ -9,7 +17,7 @@ $( document ).ready(function() {
     }});
     
     var ship;
-    var gridSize;
+    
     
     var req = $.ajax({
     url: "phpBackend.php",
@@ -21,12 +29,12 @@ $( document ).ready(function() {
         
   req.done(function ( data ) {    
    
-            alert(JSON.stringify(data));
+            
         
   gridSize = data.size;
   ship = data.ship;
   ship = data.ship.slice(0, data.ship.length);
-  alert(JSON.stringify(data.ship[0]));
+  playerHP = data.ship.length;
   buildGrid(gridSize, ship, true);
   
   var req2 = $.ajax({
@@ -42,6 +50,8 @@ $( document ).ready(function() {
   //gridSize = data.size;
   ship = data.ship;
   ship = data.ship.slice(0, data.ship.length);
+  serverHP = data.ship.length;
+  alert(JSON.stringify(data));
   buildGrid(gridSize, ship, false);
   
   
@@ -108,46 +118,12 @@ function buildGrid(size, ship, isPlayer){
     $("#enemyGrid").append(dyn_table);
 }
     
-    
-    
-//    var dyn_table = '<form id="help" action="" method="POST" > <div id="board"> <table border="1" cellpadding="10">';
-//for (var y = col; y>=0 ; y--) {
-//    dyn_table += '<tr>';
-//    for(var x = 0; x<=row; x++){
-//        if(isPlayer){
-//            shipPlaced = false;
-//                for (var z = 0; z < ship.length; z++) {
-//                    
-//                //console.log(ship[z].point.length);
-//                for (var i = 0; i < ship[z].point.length; i++) {
-//                    if(((x+1)+","+(y+1)) == ship[z].point[i]){
-//                        dyn_table += "<td><input class ='shipButt' name='submit' type='button' value='"+(x+1)+","+(y+1)+"' id='Player:"+(x+1)+","+(y+1)+"'</input></td>";
-//                     shipPlaced = true;
-//                    } else if(!shipPlaced && (i == (ship[z].point.length-1))){
-//                        dyn_table += "<td><input class ='butt' name='submit' type='button' value='"+(x+1)+","+(y+1)+"' id='Player:"+(x+1)+","+(y+1)+"'</input></td>";
-//                    
-//                }
-//                }
-//                
-//                } 
-//           
-//        }else{
-//            dyn_table += "<td><input class ='butt' name='submit' type='button' onClick=changeCol("+(x+1)+","+(y+1)+") value='"+(x+1)+","+(y+1)+"' id='"+(x+1)+","+(y+1)+"'</input></td>"; 
-//    }
-//    }
-//}
-//dyn_table += '</tr></table> </div> </form>';
-//
-//if(isPlayer){
-//    $("#playerGrid").append(dyn_table);
-//    
-//}else{
-//    $("#enemyGrid").append(dyn_table);
-//}   
+ 
 }
     
 
 function changeCol(x,y) {
+    turns++;
     var id = document.getElementById(x+","+y);
     
         var req = $.ajax({
@@ -160,20 +136,34 @@ function changeCol(x,y) {
         
   req.done(function ( data ) {
       var v = JSON.parse(data);
-      if(v.isHit == 1){
+          if(turns==gridSize){
+          
+          alert("Amount of turns over - no one won");
+           location.reload();
+           return false;
+      }
+      if(v.isHit == "Miss"){
           id.style.backgroundColor="white";
           alert("You Miss!");
           serverHit();
-      }else if(v.isDestroyed == true){
-          alert("You Won!");
+      }
+      else if(v.isDestroyed == true && v.isHit == "Destroyed"){
+          alert("You Hit! Destroying the ship");
+          playerScore++;
           id.style.backgroundColor="red";
+          if(playerScore == serverHP){
+          alert("You Won!");
           location.reload();
            return false;
-      }else{
-          alert("You Hit!");
+       }else{
+          serverHit();}
+      }
+      else if(v.isDestroyed == false && v.isHit == "Hit"){
+          alert("You Hit! Ship Is not destroyed");
           id.style.backgroundColor="red";
           serverHit();
       }
+      
       
       
       
@@ -194,17 +184,25 @@ function serverHit() {
         req.done(function ( data ) {
               var v = JSON.parse(data);
                var id = document.getElementById("Player:"+v.pointHit);
-      if(v.isHit == 1){
+       if(v.isHit == "Miss"){
           id.style.backgroundColor="white";
           alert("Server Miss!");
-      }else if(v.isDestroyed == true){
-          alert("Server Won!");
+          
+      }else if(v.isDestroyed == true && v.isHit == "Destroyed"){
+          alert("Server Hit! Destroying your ship");
+          serverScore++;
           id.style.backgroundColor="red";
+          if(serverScore == playerHP){
+          alert("Server Won!");
           location.reload();
            return false;
-      }else{
-          alert("Server Hit!");
+       }else{
+          serverHit();}
+      }
+      else if(v.isDestroyed == false && v.isHit == "Hit"){
+          alert("Server Hit! Your Ship Is not destroyed");
           id.style.backgroundColor="red";
+          
       }
       
       

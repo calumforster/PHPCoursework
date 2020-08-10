@@ -1,7 +1,7 @@
 <?php
 require 'Ship.php';
-session_start();
 //Request Vars
+session_start();
 
 
 
@@ -35,6 +35,10 @@ $_SESSION["ship"];
 $_SESSION["gridSize"];
 $_SESSION["amountOfShips"];
 
+//$_SESSION["playerShip"];
+//$_SESSION["serverShip"];
+
+
 if(!isset($_SESSION["playerShip"])){
     $_SESSION["playerShip"] = array(); 
 }
@@ -44,8 +48,6 @@ if(!isset($_SESSION["serverShip"])){
 }
 
 
-
-//$_SESSION["serverMoves"];
 
 if (isset($setGridSize)){
     
@@ -79,7 +81,6 @@ if (isset($setGridSize)){
        $randY = rand(1,$row);        
         $tempShip->orientation = rand(0,1);
         $tempShip->shipLength = rand(1,3);
-       
        if($tempShip->orientation == 0){
                     if($randX < $col-($tempShip->shipLength)){
                         for($i =0; $i<$tempShip->shipLength; $i++){
@@ -165,9 +166,9 @@ function checkPlacement($passedShip,$isPlayer){
     }else{
         if(isset($_SESSION["serverShip"])){
                         for ($i = 0; $i< count($_SESSION["serverShip"]); $i++){
-                for($j = 0; $j < $_SESSION["playerShip"][$i]->shipLength; $j++){
+                for($j = 0; $j < $_SESSION["serverShip"][$i]->shipLength; $j++){
                     for($z = 0; $z < count($passedShip->point); $z++){
-                    if($_SESSION["playerShip"][$i]->point[$j] == $passedShip->point[$z]){
+                    if($_SESSION["serverShip"][$i]->point[$j] == $passedShip->point[$z]){
                     return false;
                     }
                     }
@@ -185,35 +186,39 @@ function checkPlacement($passedShip,$isPlayer){
  if (isset($playerMove))
 {
      
-     $ship[] = $_SESSION["serverShip"];
-     //$return_data=array('isHit'=> 1,'pointHit'=>$playerMove,'isDestroyed'=> $ship[0]->isDestroyed);   
-//     for ($j = 0; $j<count($ship); $j++){
-//              $return_data=array('isHit'=> 1,'pointHit'=>$playerMove,'isDestroyed'=> $ship[$j]->isDestroyed);       
-//     for($i = 0; $i < $ship[$j]->length; $i++){
-//         if($playerMove == $ship[$j]->point[$i]){
-//             $ship[$j]->hitScore++;
-//             $return_data=array('isHit'=> "Hit",'pointHit'=>$ship[$j]->point[$i],'isDestroyed'=> $ship[$j]->isDestroyed);             
-//         }
-//           
-//        if($ship[$j]->hitScore == $ship[$j]->length){
-//                $ship[$j]->isDestroyed = true;        
-//            $return_data=array('isHit'=> "Hit",'pointHit'=>$ship[$j]->point[$i],'isDestroyed'=> $ship[$j]->isDestroyed);
-//         
-//     }
-//         
-//     }
-//         
-//     }
-
-   
-     
+     $ship = $_SESSION["serverShip"];
+     $retResult = "Miss";
+     $isShipDestroyed = false;
+     $point = "Miss";
 
     
-       echo json_encode($_SESSION["serverShip"]); 
-     
+     for ($j = 0; $j<count($ship); $j++){
+                 
+     for($i = 0; $i < $ship[$j]->shipLength; $i++){
+         $ship[$j]->isDestroyed = false;
+         if($playerMove == $ship[$j]->point[$i]){
+             $ship[$j]->hitScore++;
+             $retResult = "Hit";
+             $point = $ship[$j]->point[$i];
+                     if($ship[$j]->hitScore == $ship[$j]->shipLength){
+                $ship[$j]->isDestroyed = true;
+                $isShipDestroyed = true;
+                $retResult = "Destroyed";
+     }    
+         }
+           
+  
+  
+           
+     }
      }
   
-      
+               $return_data=array('ship'=>count($ship) , 'isHit'=> $retResult,'pointHit'=>$point,'isDestroyed'=> $isShipDestroyed);
+
+       echo json_encode($return_data); 
+
+  
+}   
      
      
      if (isset($serverMove))
@@ -224,26 +229,37 @@ function checkPlacement($passedShip,$isPlayer){
         $randX = rand(1,$col);
         $randY = rand(1,$row);
         $moveAttempt = $randX . "," . $randY;
+            $retResult = "Miss";
+            $isShipDestroyed = false;
+            $point = $moveAttempt;
         
         
      
      $ship = $_SESSION["playerShip"];
-//     $return_data=array('isHit'=> 1,'pointHit'=>$moveAttempt,'isDestroyed'=> $ship->isDestroyed);       
-//     for($i = 0; $i < $ship->length; $i++){
-//         if($moveAttempt == $ship->point[$i]){
-//             $ship->hitScore++;
-//             $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);             
-//         }
-//           
-//        if($ship->hitScore == $ship->length){
-//                $ship->isDestroyed = true;        
-//            $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);
-//         
-//     }
-//         
-//     }
+     
+          for ($j = 0; $j<count($ship); $j++){
+                 
+     for($i = 0; $i < $ship[$j]->shipLength; $i++){
+         if($moveAttempt == $ship[$j]->point[$i]){
+             $ship[$j]->hitScore++;
+             $retResult = "Hit";
+             $point = $ship[$j]->point[$i];
+             $isShipDestroyed = false;
+                     if($ship[$j]->hitScore == $ship[$j]->shipLength){
+                $ship[$j]->isDestroyed = true;
+                $isShipDestroyed = true;
+                $retResult = "Destroyed";    
+     }
+         }
+           
+
+           
+     }
+     }
+               $return_data=array('isHit'=> $retResult,'pointHit'=>$point,'isDestroyed'=> $isShipDestroyed);
+       echo json_encode($return_data);
+     
       
-       echo json_encode($_SESSION["playerShip"]);  
      
      }
     
