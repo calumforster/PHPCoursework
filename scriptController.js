@@ -39,7 +39,7 @@ $( document ).ready(function() {
         
   req2.done(function ( data ) {
 
-  gridSize = data.size;
+  //gridSize = data.size;
   ship = data.ship;
   ship = data.ship.slice(0, data.ship.length);
   buildGrid(gridSize, ship, false);
@@ -65,6 +65,8 @@ function buildGrid(size, ship, isPlayer){
     }
     
     console.log("ship 1",ship[1]);
+    
+    
     for (var i = 0; i < ship.length; i++) {
             for (var j = 0; j < ship[i].point.length; j++) {
                

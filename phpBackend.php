@@ -86,42 +86,48 @@ if (isset($setGridSize)){
                             
                            $tempShip->point[$i] = $randX+$i . "," . $randY;
                         }
-            $shipPlaced = true;
+             if(checkPlacement($tempShip, $onload)){
+                         $shipPlaced = true;
   
             if($onload == "true"){
                 $ship[$ships] = $tempShip;
                 array_push($returnShip,$tempShip);
                 
-                //array_push($_SESSION["playerShip"],$tempShip);         
+       
             }else{
                 $ship[$ships] = $tempShip;
                 array_push($returnShip,$tempShip);
-              // array_push($_SESSION["serverShip"],$tempShip);
-            }
+
+            }    
+                 
+             }           
+
         }
         }else{
             if($randY < $row-($tempShip->shipLength)){
             for($i =0; $i<$tempShip->shipLength; $i++){
              $tempShip->point[$i] = $randX . "," . ($randY+$i);
                        }
-            $shipPlaced = true;
+             if(checkPlacement($tempShip, $onload)){
+                         $shipPlaced = true;
   
-            if($onload == "true"){   
+            if($onload == "true"){
                 $ship[$ships] = $tempShip;
                 array_push($returnShip,$tempShip);
-              // array_push($_SESSION["playerShip"],$tempShip);
-
+                
+       
             }else{
                 $ship[$ships] = $tempShip;
                 array_push($returnShip,$tempShip);
-              // array_push($_SESSION["serverShip"],$tempShip);
- 
-            }
+
+            }    
+                 
+             }
         }
         }
         
     }
-       //array_push($ship,$tempShip);
+
        $shipPlaced = false;
    }
    
@@ -138,7 +144,43 @@ if (isset($setGridSize)){
       
      $_SESSION["grid"] = $battleGrid;
   
-} 
+}
+
+
+function checkPlacement($passedShip,$isPlayer){
+    
+    if($isPlayer){
+        if(isset($_SESSION["playerShip"])){
+            for ($i = 0; $i< count($_SESSION["playerShip"]); $i++){
+                for($j = 0; $j < $_SESSION["playerShip"][$i]->shipLength; $j++){
+                    for($z = 0; $z < count($passedShip->point); $z++){
+                    if($_SESSION["playerShip"][$i]->point[$j] == $passedShip->point[$z]){
+                    return false;
+                    }
+                    }
+                }  
+
+            }
+        }
+    }else{
+        if(isset($_SESSION["serverShip"])){
+                        for ($i = 0; $i< count($_SESSION["serverShip"]); $i++){
+                for($j = 0; $j < $_SESSION["playerShip"][$i]->shipLength; $j++){
+                    for($z = 0; $z < count($passedShip->point); $z++){
+                    if($_SESSION["playerShip"][$i]->point[$j] == $passedShip->point[$z]){
+                    return false;
+                    }
+                    }
+                }  
+
+            }
+        }
+    }
+    
+    
+    
+    return true;
+}
 
  if (isset($playerMove))
 {
