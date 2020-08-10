@@ -19,10 +19,14 @@ $( document ).ready(function() {
         isPlayer : true
     }});
         
-  req.done(function ( data ) {
-alert(JSON.stringify(data));
+  req.done(function ( data ) {    
+   
+            alert(JSON.stringify(data));
+        
   gridSize = data.size;
   ship = data.ship;
+  ship = data.ship.slice(0, data.ship.length);
+  alert(JSON.stringify(data.ship[0]));
   buildGrid(gridSize, ship, true);
   
   var req2 = $.ajax({
@@ -37,6 +41,7 @@ alert(JSON.stringify(data));
 
   gridSize = data.size;
   ship = data.ship;
+  ship = data.ship.slice(0, data.ship.length);
   buildGrid(gridSize, ship, false);
   
   
@@ -52,37 +57,91 @@ function buildGrid(size, ship, isPlayer){
      var col = size;
     var row = size;
     var shipPlaced = false;
+    console.log("Ship length"+JSON.stringify(ship.length));
+    
+    let grid = new Array(col);
+            for (var i = 0; i < col; i++) {
+                grid[i] = new Array(row);
+    }
+    
+    console.log("ship 1",ship[1]);
+    for (var i = 0; i < ship.length; i++) {
+            for (var j = 0; j < ship[i].point.length; j++) {
+               
+            let coOrdinates = ship[i].point[j].split(","); 
+            console.log(coOrdinates);
+            grid[coOrdinates[1]-1][coOrdinates[0]-1] = 1;
+        }        
+    
+    }
+    console.log("Shite code: ", JSON.stringify(grid));
+    
     var dyn_table = '<form id="help" action="" method="POST" > <div id="board"> <table border="1" cellpadding="10">';
-for (var y = col; y>0 ; y--) {
+    for (var y = col-1; y>=0 ; y--) {
     dyn_table += '<tr>';
-    for(var x = 1; x<=row; x++){
-        if(isPlayer){
-            shipPlaced = false;
-                for (var i = 0; i < ship.point.length; i++) {
-                    if((x+","+y) == ship.point[i]){
-                        dyn_table += "<td><input class ='shipButt' name='submit' type='button' value='"+x+","+y+"' id='Player:"+x+","+y+"'</input></td>";
-                     shipPlaced = true;
-                    } else if(!shipPlaced && (i == (ship.point.length-1))){
-                        dyn_table += "<td><input class ='butt' name='submit' type='button' value='"+x+","+y+"' id='Player:"+x+","+y+"'</input></td>";
-                    
-                }
-                }
-                
-                    
-           
+    for(var x = 0; x<row; x++){
+    
+    if(isPlayer){
+        if(grid[y][x] == 1){
+          dyn_table += "<td><input class ='shipButt' name='submit' type='button' value='"+(x+1)+","+(y+1)+"' id='Player:"+(x+1)+","+(y+1)+"'</input></td>";  
         }else{
-            dyn_table += "<td><input class ='butt' name='submit' type='button' onClick=changeCol("+x+","+y+") value='"+x+","+y+"' id='"+x+","+y+"'</input></td>"; 
+            dyn_table += "<td><input class ='butt' name='submit' type='button' value='"+(x+1)+","+(y+1)+"' id='Player:"+(x+1)+","+(y+1)+"'</input></td>";
+        }      
+    }else{
+        dyn_table += "<td><input class ='butt' name='submit' type='button' onClick=changeCol("+(x+1)+","+(y+1)+") value='"+(x+1)+","+(y+1)+"' id='"+(x+1)+","+(y+1)+"'</input></td>";
     }
+            
+        
+        }
     }
-}
-dyn_table += '</tr></table> </div> </form>';
+    
+    
+    
+    dyn_table += '</tr></table> </div> </form>';
 
-if(isPlayer){
+    if(isPlayer){
     $("#playerGrid").append(dyn_table);
     
 }else{
     $("#enemyGrid").append(dyn_table);
-}   
+}
+    
+    
+    
+//    var dyn_table = '<form id="help" action="" method="POST" > <div id="board"> <table border="1" cellpadding="10">';
+//for (var y = col; y>=0 ; y--) {
+//    dyn_table += '<tr>';
+//    for(var x = 0; x<=row; x++){
+//        if(isPlayer){
+//            shipPlaced = false;
+//                for (var z = 0; z < ship.length; z++) {
+//                    
+//                //console.log(ship[z].point.length);
+//                for (var i = 0; i < ship[z].point.length; i++) {
+//                    if(((x+1)+","+(y+1)) == ship[z].point[i]){
+//                        dyn_table += "<td><input class ='shipButt' name='submit' type='button' value='"+(x+1)+","+(y+1)+"' id='Player:"+(x+1)+","+(y+1)+"'</input></td>";
+//                     shipPlaced = true;
+//                    } else if(!shipPlaced && (i == (ship[z].point.length-1))){
+//                        dyn_table += "<td><input class ='butt' name='submit' type='button' value='"+(x+1)+","+(y+1)+"' id='Player:"+(x+1)+","+(y+1)+"'</input></td>";
+//                    
+//                }
+//                }
+//                
+//                } 
+//           
+//        }else{
+//            dyn_table += "<td><input class ='butt' name='submit' type='button' onClick=changeCol("+(x+1)+","+(y+1)+") value='"+(x+1)+","+(y+1)+"' id='"+(x+1)+","+(y+1)+"'</input></td>"; 
+//    }
+//    }
+//}
+//dyn_table += '</tr></table> </div> </form>';
+//
+//if(isPlayer){
+//    $("#playerGrid").append(dyn_table);
+//    
+//}else{
+//    $("#enemyGrid").append(dyn_table);
+//}   
 }
     
 

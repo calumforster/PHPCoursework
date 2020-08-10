@@ -31,21 +31,35 @@ $battleGrid;
 $_SESSION["grid"];
 $_SESSION["ship"];
 
-$_SESSION["playerShip"];
-$_SESSION["serverShip"];
+
 $_SESSION["gridSize"];
+$_SESSION["amountOfShips"];
+
+if(!isset($_SESSION["playerShip"])){
+    $_SESSION["playerShip"] = array(); 
+}
+
+if(!isset($_SESSION["serverShip"])){
+    $_SESSION["serverShip"] = array(); 
+}
+
+
 
 //$_SESSION["serverMoves"];
 
 if (isset($setGridSize)){
     
     $_SESSION["gridSize"] = rand(5,9);
+    $_SESSION["amountOfShips"] = rand(1,3);
 }
 
  if (isset($onload))
 {
+//$_SESSION["playerShip"] = array(); 
+//$_SESSION["serverShip"] = array(); 
      
-     $ship = new Ship(); 
+     $ship[] = array(); 
+     $returnShip = array();
      $col = $_SESSION["gridSize"];
      $row = $_SESSION["gridSize"];
      
@@ -56,42 +70,70 @@ if (isset($setGridSize)){
     }
     }     
     $shipPlaced = false; 
-    while(!$shipPlaced){
-        $randX = rand(1,$col);
-        $randY = rand(1,$row);        
-        $ship->orientation = rand(0,1);
-        $ship->length = rand(1,3);
-        
-        if($ship->orientation == 0){
-                    if($randX < $col-($ship->length)){
-                        for($i =0; $i<$ship->length; $i++){
+    
+   for ($ships = 0 ; $ships < $_SESSION["amountOfShips"] ; $ships++){       
+       $tempShip = new Ship();
+
+            while(!$shipPlaced){
+       $randX = rand(1,$col);
+       $randY = rand(1,$row);        
+        $tempShip->orientation = rand(0,1);
+        $tempShip->shipLength = rand(1,3);
+       
+       if($tempShip->orientation == 0){
+                    if($randX < $col-($tempShip->shipLength)){
+                        for($i =0; $i<$tempShip->shipLength; $i++){
                             
-                           $ship->point[$i] = $randX+$i . "," . $randY;
+                           $tempShip->point[$i] = $randX+$i . "," . $randY;
                         }
             $shipPlaced = true;
+  
             if($onload == "true"){
-                $_SESSION["playerShip"] = $ship;                
+                $ship[$ships] = $tempShip;
+                array_push($returnShip,$tempShip);
+                
+                //array_push($_SESSION["playerShip"],$tempShip);         
             }else{
-                $_SESSION["serverShip"] = $ship;
+                $ship[$ships] = $tempShip;
+                array_push($returnShip,$tempShip);
+              // array_push($_SESSION["serverShip"],$tempShip);
             }
         }
         }else{
-            if($randY < $row-($ship->length)){
-              for($i =0; $i<$ship->length; $i++){
-              $ship->point[$i] = $randX . "," . ($randY+$i);
-                        }
+            if($randY < $row-($tempShip->shipLength)){
+            for($i =0; $i<$tempShip->shipLength; $i++){
+             $tempShip->point[$i] = $randX . "," . ($randY+$i);
+                       }
             $shipPlaced = true;
-            if($onload == "true"){
-                $_SESSION["playerShip"] = $ship;                
+  
+            if($onload == "true"){   
+                $ship[$ships] = $tempShip;
+                array_push($returnShip,$tempShip);
+              // array_push($_SESSION["playerShip"],$tempShip);
+
             }else{
-                $_SESSION["serverShip"] = $ship;
+                $ship[$ships] = $tempShip;
+                array_push($returnShip,$tempShip);
+              // array_push($_SESSION["serverShip"],$tempShip);
+ 
             }
         }
         }
         
-    } 
+    }
+       //array_push($ship,$tempShip);
+       $shipPlaced = false;
+   }
+   
+   if($onload == "true"){
+   $_SESSION["playerShip"] = $ship;
+   }else{
+      $_SESSION["serverShip"] = $ship;
+   }
+    
+ 
      header('Content-Type: application/json');
-    $return_data=array('ship'=>$ship,'size'=>$col);
+    $return_data=array('ship'=>$returnShip,'size'=>$col);
     echo json_encode($return_data);
       
      $_SESSION["grid"] = $battleGrid;
@@ -101,26 +143,31 @@ if (isset($setGridSize)){
  if (isset($playerMove))
 {
      
-     $ship = $_SESSION["serverShip"];
-     $return_data=array('isHit'=> 1,'pointHit'=>$playerMove,'isDestroyed'=> $ship->isDestroyed);       
-     for($i = 0; $i < $ship->length; $i++){
-         if($playerMove == $ship->point[$i]){
-             $ship->hitScore++;
-             $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);             
-         }
-           
-        if($ship->hitScore == $ship->length){
-                $ship->isDestroyed = true;        
-            $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);
-         
-     }
-         
-     }
+     $ship[] = $_SESSION["serverShip"];
+     //$return_data=array('isHit'=> 1,'pointHit'=>$playerMove,'isDestroyed'=> $ship[0]->isDestroyed);   
+//     for ($j = 0; $j<count($ship); $j++){
+//              $return_data=array('isHit'=> 1,'pointHit'=>$playerMove,'isDestroyed'=> $ship[$j]->isDestroyed);       
+//     for($i = 0; $i < $ship[$j]->length; $i++){
+//         if($playerMove == $ship[$j]->point[$i]){
+//             $ship[$j]->hitScore++;
+//             $return_data=array('isHit'=> "Hit",'pointHit'=>$ship[$j]->point[$i],'isDestroyed'=> $ship[$j]->isDestroyed);             
+//         }
+//           
+//        if($ship[$j]->hitScore == $ship[$j]->length){
+//                $ship[$j]->isDestroyed = true;        
+//            $return_data=array('isHit'=> "Hit",'pointHit'=>$ship[$j]->point[$i],'isDestroyed'=> $ship[$j]->isDestroyed);
+//         
+//     }
+//         
+//     }
+//         
+//     }
+
    
      
 
     
-       echo json_encode($return_data); 
+       echo json_encode($_SESSION["serverShip"]); 
      
      }
   
@@ -139,22 +186,22 @@ if (isset($setGridSize)){
         
      
      $ship = $_SESSION["playerShip"];
-     $return_data=array('isHit'=> 1,'pointHit'=>$moveAttempt,'isDestroyed'=> $ship->isDestroyed);       
-     for($i = 0; $i < $ship->length; $i++){
-         if($moveAttempt == $ship->point[$i]){
-             $ship->hitScore++;
-             $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);             
-         }
-           
-        if($ship->hitScore == $ship->length){
-                $ship->isDestroyed = true;        
-            $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);
-         
-     }
-         
-     }
-
-       echo json_encode($return_data); 
+//     $return_data=array('isHit'=> 1,'pointHit'=>$moveAttempt,'isDestroyed'=> $ship->isDestroyed);       
+//     for($i = 0; $i < $ship->length; $i++){
+//         if($moveAttempt == $ship->point[$i]){
+//             $ship->hitScore++;
+//             $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);             
+//         }
+//           
+//        if($ship->hitScore == $ship->length){
+//                $ship->isDestroyed = true;        
+//            $return_data=array('isHit'=> "Hit",'pointHit'=>$ship->point[$i],'isDestroyed'=> $ship->isDestroyed);
+//         
+//     }
+//         
+//     }
+      
+       echo json_encode($_SESSION["playerShip"]);  
      
      }
     
